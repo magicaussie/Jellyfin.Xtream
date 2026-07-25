@@ -19,7 +19,11 @@ export default function (view) {
       () => getConfig.then((config) => config.Vod),
       () => Xtream.fetchJson('Xtream/VodCategories'),
       (categoryId) => Xtream.fetchJson(`Xtream/VodCategories/${categoryId}`),
-    ).then((data) => {
+    ).then(({ data, table: tbl }) => {
+      const filterInput = view.querySelector('#VodCategoryFilter');
+      if (filterInput && tbl) {
+        filterInput.addEventListener('input', () => Xtream.applyFilter(filterInput, tbl));
+      }
       view.querySelector('#XtreamVodForm').addEventListener('submit', (e) => {
         Dashboard.showLoadingMsg();
 

@@ -17,7 +17,11 @@ export default function (view) {
       () => getConfig.then((config) => config.Series),
       () => Xtream.fetchJson('Xtream/SeriesCategories'),
       (categoryId) => Xtream.fetchJson(`Xtream/SeriesCategories/${categoryId}`),
-    ).then((data) => {
+    ).then(({ data, table: tbl }) => {
+      const filterInput = view.querySelector('#SeriesCategoryFilter');
+      if (filterInput && tbl) {
+        filterInput.addEventListener('input', () => Xtream.applyFilter(filterInput, tbl));
+      }
       view.querySelector('#XtreamSeriesForm').addEventListener('submit', (e) => {
         Dashboard.showLoadingMsg();
 

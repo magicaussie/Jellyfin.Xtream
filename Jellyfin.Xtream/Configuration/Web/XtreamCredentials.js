@@ -14,6 +14,7 @@ export default function (view) {
       view.querySelector('#Username').value = config.Username;
       view.querySelector('#Password').value = config.Password;
       view.querySelector('#RequestTimeout').value = config.RequestTimeout;
+      view.querySelector('#EpgLimit').value = config.EpgLimit || 0;
       view.querySelector('#UserAgent').value = config.UserAgent;
       Dashboard.hideLoadingMsg();
     });
@@ -63,6 +64,7 @@ export default function (view) {
         config.Username = view.querySelector('#Username').value;
         config.Password = view.querySelector('#Password').value;
         config.RequestTimeout = parseInt(view.querySelector('#RequestTimeout').value, 10);
+        config.EpgLimit = parseInt(view.querySelector('#EpgLimit').value, 10) || 0;
         config.UserAgent = view.querySelector('#UserAgent').value;
         ApiClient.updatePluginConfiguration(pluginId, config).then((result) => {
           reloadStatus();

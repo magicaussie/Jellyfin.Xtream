@@ -50,6 +50,11 @@ public class PluginConfiguration : BasePluginConfiguration
     public int RequestTimeout { get; set; } = 90;
 
     /// <summary>
+    /// Gets or sets the maximum number of EPG entries to fetch per channel (0 for full EPG).
+    /// </summary>
+    public int EpgLimit { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the Catch-up channel is visible.
     /// </summary>
     public bool IsCatchupVisible { get; set; }

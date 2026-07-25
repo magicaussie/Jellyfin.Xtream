@@ -197,6 +197,12 @@ public class XtreamClient(HttpClient client, ILogger<XtreamClient> logger) : IDi
            $"/player_api.php?username={connectionInfo.UserName}&password={connectionInfo.Password}&action=get_simple_data_table&stream_id={streamId}",
            cancellationToken);
 
+    public Task<EpgListings> GetShortEpgInfoAsync(ConnectionInfo connectionInfo, long streamId, int limit, CancellationToken cancellationToken) =>
+         QueryApi<EpgListings>(
+           connectionInfo,
+           $"/player_api.php?username={connectionInfo.UserName}&password={connectionInfo.Password}&action=get_short_epg&stream_id={streamId}&limit={limit}",
+           cancellationToken);
+
     /// <summary>
     /// Dispose the HTTP client.
     /// </summary>

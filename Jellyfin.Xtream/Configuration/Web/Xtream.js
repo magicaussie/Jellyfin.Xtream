@@ -183,8 +183,21 @@ const populateCategoriesTable = (table, loadConfig, loadCategories, loadItems) =
         table.appendChild(elem);
       }
       Dashboard.hideLoadingMsg();
-      return data;
+      return { data, categories, table };
     });
+}
+
+const applyFilter = (filterInput, table) => {
+  if (!filterInput || !table) return;
+  const query = filterInput.value.toLowerCase().trim();
+  const rows = table.querySelectorAll('tr');
+  for (let i = 0; i < rows.length; ++i) {
+    const label = rows[i].querySelector('td:nth-child(2) label, td:nth-child(2)');
+    if (label) {
+      const text = label.innerText || label.textContent || '';
+      rows[i].style.display = !query || text.toLowerCase().includes(query) ? '' : 'none';
+    }
+  }
 }
 
 const fetchJson = (url) => ApiClient.fetch({
@@ -234,5 +247,6 @@ export default {
   filter,
   pluginConfig,
   populateCategoriesTable,
+  applyFilter,
   setTabs,
 }

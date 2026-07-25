@@ -26,6 +26,8 @@ public interface IXtreamClient
 {
     Task<EpgListings> GetEpgInfoAsync(ConnectionInfo connectionInfo, long streamId, CancellationToken cancellationToken);
 
+    Task<EpgListings> GetShortEpgInfoAsync(ConnectionInfo connectionInfo, long streamId, int limit, CancellationToken cancellationToken);
+
     Task<List<Category>> GetLiveCategoryAsync(ConnectionInfo connectionInfo, CancellationToken cancellationToken);
 
     Task<List<StreamInfo>> GetLiveStreamsAsync(ConnectionInfo connectionInfo, CancellationToken cancellationToken);

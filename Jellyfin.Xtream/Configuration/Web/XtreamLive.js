@@ -17,7 +17,11 @@ export default function (view) {
       () => getConfig.then((config) => config.LiveTv),
       () => Xtream.fetchJson('Xtream/LiveCategories'),
       (categoryId) => Xtream.fetchJson(`Xtream/LiveCategories/${categoryId}`),
-    ).then((data) => {
+    ).then(({ data, table: tbl }) => {
+      const filterInput = view.querySelector('#CategoryFilter');
+      if (filterInput && tbl) {
+        filterInput.addEventListener('input', () => Xtream.applyFilter(filterInput, tbl));
+      }
       view.querySelector('#XtreamLiveForm').addEventListener('submit', (e) => {
         Dashboard.showLoadingMsg();
 

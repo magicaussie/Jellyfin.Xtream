@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
@@ -201,5 +202,107 @@ public class XtreamController(IXtreamClient xtreamClient) : ControllerBase
         IEnumerable<StreamInfo> streams = await Plugin.Instance.StreamService.GetLiveStreams(cancellationToken).ConfigureAwait(false);
         var channels = streams.Select(CreateChannelResponse).ToList();
         return Ok(channels);
+    }
+
+    /// <summary>
+    /// Search across live streams, VOD, and series.
+    /// </summary>
+    /// <param name="query">The search query.</param>
+    /// <param name="cancellationToken">The cancellation token for cancelling requests.</param>
+    /// <returns>A list of matching items.</returns>
+    [Authorize(Policy = "RequiresElevation")]
+    [HttpGet("Search")]
+    public async Task<ActionResult<IEnumerable<SearchResult>>> Search([FromQuery] string query, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return Ok(Array.Empty<SearchResult>());
+        }
+
+        Plugin plugin = Plugin.Instance;
+        List<SearchResult> results = [];
+        string lowerQuery = query.Trim().ToLowerInvariant();
+
+        try
+        {
+            List<StreamInfo> liveStreams = await xtreamClient.GetLiveStreamsAsync(plugin.Creds, cancellationToken).ConfigureAwait(false);
+            foreach (StreamInfo stream in liveStreams)
+            {
+                if (stream.Name.Contains(lowerQuery, StringComparison.OrdinalIgnoreCase))
+                {
+                    results.Add(new SearchResult
+                    {
+                        Id = stream.StreamId,
+                        Name = stream.Name,
+                        Type = "live",
+                        Category = "Live TV",
+                        ImageUrl = stream.StreamIcon,
+                    });
+                }
+            }
+        }
+        catch
+        {
+        }
+
+        try
+        {
+            List<Category> vodCategories = await xtreamClient.GetVodCategoryAsync(plugin.Creds, cancellationToken).ConfigureAwait(false);
+            foreach (Category category in vodCategories)
+            {
+                if (category.CategoryName.Contains(lowerQuery, StringComparison.OrdinalIgnoreCase))
+                {
+                    List<StreamInfo> vodStreams = await xtreamClient.GetVodStreamsByCategoryAsync(plugin.Creds, category.CategoryId, cancellationToken).ConfigureAwait(false);
+                    foreach (StreamInfo stream in vodStreams)
+                    {
+                        if (stream.Name.Contains(lowerQuery, StringComparison.OrdinalIgnoreCase))
+                        {
+                            results.Add(new SearchResult
+                            {
+                                Id = stream.StreamId,
+                                Name = stream.Name,
+                                Type = "vod",
+                                Category = category.CategoryName,
+                                ImageUrl = stream.StreamIcon,
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        catch
+        {
+        }
+
+        try
+        {
+            List<Category> seriesCategories = await xtreamClient.GetSeriesCategoryAsync(plugin.Creds, cancellationToken).ConfigureAwait(false);
+            foreach (Category category in seriesCategories)
+            {
+                if (category.CategoryName.Contains(lowerQuery, StringComparison.OrdinalIgnoreCase))
+                {
+                    List<Series> seriesList = await xtreamClient.GetSeriesByCategoryAsync(plugin.Creds, category.CategoryId, cancellationToken).ConfigureAwait(false);
+                    foreach (Series series in seriesList)
+                    {
+                        if (series.Name.Contains(lowerQuery, StringComparison.OrdinalIgnoreCase))
+                        {
+                            results.Add(new SearchResult
+                            {
+                                Id = series.SeriesId,
+                                Name = series.Name,
+                                Type = "series",
+                                Category = category.CategoryName,
+                                ImageUrl = series.Cover,
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        catch
+        {
+        }
+
+        return Ok(results.OrderBy(r => r.Name).Take(50));
     }
 }

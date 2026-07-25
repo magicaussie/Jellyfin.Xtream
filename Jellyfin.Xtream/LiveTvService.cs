@@ -172,38 +172,58 @@ public class LiveTvService(IServerApplicationHost appHost, IHttpClientFactory ht
             throw new ArgumentException("Unsupported channel");
         }
 
-        string key = $"xtream-epg-{channelId}";
-        ICollection<ProgramInfo>? items = null;
-        if (memoryCache.TryGetValue(key, out ICollection<ProgramInfo>? o))
+        string cacheKey = $"xtream-epg-{streamId}";
+        if (memoryCache.TryGetValue(cacheKey, out ICollection<ProgramInfo>? items) && items != null)
         {
-            items = o;
+            return FilterPrograms(items, channelId, startDateUtc, endDateUtc);
         }
-        else
+
+        Plugin plugin = Plugin.Instance;
+        EpgListings epgs;
+        try
         {
-            items = new List<ProgramInfo>();
-            Plugin plugin = Plugin.Instance;
+            int epgLimit = plugin.Configuration.EpgLimit;
+            if (epgLimit > 0)
             {
-                EpgListings epgs = await xtreamClient.GetEpgInfoAsync(plugin.Creds, streamId, cancellationToken).ConfigureAwait(false);
-                foreach (EpgInfo epg in epgs.Listings)
-                {
-                    items.Add(new()
-                    {
-                        Id = StreamService.ToGuid(StreamService.EpgPrefix, streamId, (int)epg.Id, 0).ToString(),
-                        ChannelId = channelId,
-                        StartDate = epg.Start,
-                        EndDate = epg.End,
-                        Name = epg.Title,
-                        Overview = epg.Description,
-                    });
-                }
+                epgs = await xtreamClient.GetShortEpgInfoAsync(plugin.Creds, streamId, epgLimit, cancellationToken).ConfigureAwait(false);
             }
-
-            memoryCache.Set(key, items, DateTimeOffset.Now.AddMinutes(10));
+            else
+            {
+                epgs = await xtreamClient.GetEpgInfoAsync(plugin.Creds, streamId, cancellationToken).ConfigureAwait(false);
+            }
+        }
+        catch
+        {
+            return Enumerable.Empty<ProgramInfo>();
         }
 
-        return from epg in items
-               where epg.EndDate >= startDateUtc && epg.StartDate < endDateUtc
-               select epg;
+        if (epgs?.Listings == null || epgs.Listings.Count == 0)
+        {
+            memoryCache.Set(cacheKey, new List<ProgramInfo>(), TimeSpan.FromMinutes(30));
+            return Enumerable.Empty<ProgramInfo>();
+        }
+
+        items = epgs.Listings.Select(epg => new ProgramInfo
+        {
+            Id = StreamService.ToGuid(StreamService.EpgPrefix, streamId, (int)epg.Id, 0).ToString(),
+            ChannelId = channelId,
+            StartDate = epg.Start,
+            EndDate = epg.End,
+            Name = epg.Title,
+            Overview = epg.Description,
+            IsPremiere = epg.NowPlaying,
+        }).ToList();
+
+        memoryCache.Set(cacheKey, items, TimeSpan.FromMinutes(30));
+        return FilterPrograms(items, channelId, startDateUtc, endDateUtc);
+    }
+
+    private static IEnumerable<ProgramInfo> FilterPrograms(ICollection<ProgramInfo> items, string channelId, DateTime startDateUtc, DateTime endDateUtc)
+    {
+        return items.Where(epg =>
+            epg.ChannelId == channelId &&
+            epg.EndDate >= startDateUtc &&
+            epg.StartDate < endDateUtc);
     }
 
     /// <inheritdoc />
