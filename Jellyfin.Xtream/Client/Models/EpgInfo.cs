@@ -40,7 +40,7 @@ public class EpgInfo
     public DateTime Start { get; set; }
 
     [JsonProperty("start")]
-    public DateTime StartLocalTime { get; set; }
+    public DateTime? StartLocalTime { get; set; }
 
     [JsonConverter(typeof(UnixDateTimeConverter))]
     [JsonProperty("stop_timestamp")]

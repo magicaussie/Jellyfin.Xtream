@@ -116,7 +116,12 @@ public class VodChannel(ILogger<VodChannel> logger) : IChannel, IDisableMediaSou
 
     private Task<ChannelItemInfo> CreateChannelItemInfo(StreamInfo stream)
     {
-        long added = long.Parse(stream.Added, CultureInfo.InvariantCulture);
+        DateTime? created = null;
+        if (long.TryParse(stream.Added, NumberStyles.Integer, CultureInfo.InvariantCulture, out long added))
+        {
+            created = DateTimeOffset.FromUnixTimeSeconds(added).DateTime;
+        }
+
         ParsedName parsedName = StreamService.ParseName(stream.Name);
 
         List<MediaSourceInfo> sources =
@@ -130,7 +135,7 @@ public class VodChannel(ILogger<VodChannel> logger) : IChannel, IDisableMediaSou
         ChannelItemInfo result = new ChannelItemInfo()
         {
             ContentType = ChannelMediaContentType.Movie,
-            DateCreated = DateTimeOffset.FromUnixTimeSeconds(added).DateTime,
+            DateCreated = created,
             Id = $"{StreamService.StreamPrefix}{stream.StreamId}",
             ImageUrl = stream.StreamIcon,
             IsLiveStream = false,

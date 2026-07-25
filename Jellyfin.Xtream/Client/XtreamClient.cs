@@ -61,7 +61,7 @@ public class XtreamClient(HttpClient client, ILogger<XtreamClient> logger) : IDi
     }
 
     /// <summary>
-    /// Ignores error events if the target property is nullable.
+    /// Ignores error events if the target property is nullable, otherwise logs a warning and handles the error.
     /// </summary>
     /// <param name="logger">Instance of the <see cref="ILogger"/> interface.</param>
     /// <returns>An event handler using the given logger.</returns>
@@ -92,11 +92,20 @@ public class XtreamClient(HttpClient client, ILogger<XtreamClient> logger) : IDi
                     }
                 });
 
-                if (property != null && Nullable.GetUnderlyingType(property.PropertyType) != null)
+                if (property != null)
                 {
-                    logger.LogDebug("Property `{0}` (`{1}` in JSON) is nullable, ignoring parsing error!", property.Name, jsonName);
-                    logger.LogDebug("Stack trace: {0}", new System.Diagnostics.StackTrace());
-                    args.ErrorContext.Handled = true;
+                    if (Nullable.GetUnderlyingType(property.PropertyType) != null)
+                    {
+                        logger.LogDebug("Property `{0}` (`{1}` in JSON) is nullable, ignoring parsing error!", property.Name, jsonName);
+                        logger.LogDebug("Stack trace: {0}", new System.Diagnostics.StackTrace());
+                        args.ErrorContext.Handled = true;
+                    }
+                    else
+                    {
+                        logger.LogWarning("Property `{0}` (`{1}` in JSON) could not be parsed, using default value.", property.Name, jsonName);
+                        logger.LogWarning("Stack trace: {0}", new System.Diagnostics.StackTrace());
+                        args.ErrorContext.Handled = true;
+                    }
                 }
             }
         };
