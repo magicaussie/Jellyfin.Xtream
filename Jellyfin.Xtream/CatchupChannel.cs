@@ -127,7 +127,7 @@ public class CatchupChannel(ILogger<CatchupChannel> logger, IXtreamClient xtream
             ParsedName parsedName = StreamService.ParseName(channel.Name);
             items.Add(new ChannelItemInfo()
             {
-                Id = StreamService.ToGuid(StreamService.CatchupPrefix, channel.CategoryId ?? 0, channel.StreamId, 0).ToString(),
+                Id = StreamService.ToGuid(StreamService.CatchupPrefix, (int)(channel.CategoryId ?? 0), (int)channel.StreamId, 0).ToString(),
                 ImageUrl = channel.StreamIcon,
                 Name = parsedName.Title,
                 Tags = new List<string>(parsedName.Tags),
@@ -143,7 +143,7 @@ public class CatchupChannel(ILogger<CatchupChannel> logger, IXtreamClient xtream
         return result;
     }
 
-    private async Task<ChannelItemResult> GetDays(int categoryId, int channelId, CancellationToken cancellationToken)
+    private async Task<ChannelItemResult> GetDays(long categoryId, long channelId, CancellationToken cancellationToken)
     {
         Plugin plugin = Plugin.Instance;
 
@@ -159,7 +159,7 @@ public class CatchupChannel(ILogger<CatchupChannel> logger, IXtreamClient xtream
             int day = (int)(channelDay - DateTime.UnixEpoch).TotalDays;
             items.Add(new()
             {
-                Id = StreamService.ToGuid(StreamService.CatchupPrefix, channel.CategoryId ?? 0, channel.StreamId, day).ToString(),
+                Id = StreamService.ToGuid(StreamService.CatchupPrefix, (int)(channel.CategoryId ?? 0), (int)channel.StreamId, day).ToString(),
                 ImageUrl = channel.StreamIcon,
                 Name = channelDay.ToLocalTime().ToString("ddd dd'-'MM'-'yyyy", CultureInfo.InvariantCulture),
                 Tags = new List<string>(parsedName.Tags),
@@ -175,7 +175,7 @@ public class CatchupChannel(ILogger<CatchupChannel> logger, IXtreamClient xtream
         return result;
     }
 
-    private async Task<ChannelItemResult> GetStreams(int categoryId, int channelId, int day, CancellationToken cancellationToken)
+    private async Task<ChannelItemResult> GetStreams(long categoryId, long channelId, int day, CancellationToken cancellationToken)
     {
         DateTime start = DateTime.UnixEpoch.AddDays(day);
         DateTime end = start.AddDays(1);
@@ -198,7 +198,7 @@ public class CatchupChannel(ILogger<CatchupChannel> logger, IXtreamClient xtream
                         new()
                         {
                             ContentType = ChannelMediaContentType.TvExtra,
-                            Id = StreamService.ToGuid(StreamService.CatchupStreamPrefix, channelId, 0, day).ToString(),
+                            Id = StreamService.ToGuid(StreamService.CatchupStreamPrefix, (int)channelId, 0, day).ToString(),
                             IsLiveStream = false,
                             MediaSources = [
                                 plugin.StreamService.GetMediaSourceInfo(StreamType.CatchUp, channelId, start: start, durationMinutes: durationMinutes)
@@ -226,7 +226,7 @@ public class CatchupChannel(ILogger<CatchupChannel> logger, IXtreamClient xtream
             {
                 ContentType = ChannelMediaContentType.TvExtra,
                 DateCreated = epg.Start,
-                Id = StreamService.ToGuid(StreamService.CatchupStreamPrefix, channel.StreamId, epg.Id, day).ToString(),
+                Id = StreamService.ToGuid(StreamService.CatchupStreamPrefix, (int)channel.StreamId, (int)epg.Id, day).ToString(),
                 IsLiveStream = false,
                 MediaSources = sources,
                 MediaType = ChannelMediaType.Video,

@@ -23,7 +23,7 @@ namespace Jellyfin.Xtream.Client.Models;
 public class Episode
 {
     [JsonProperty("id")]
-    public int EpisodeId { get; set; }
+    public long EpisodeId { get; set; }
 
     [JsonProperty("episode_num")]
     public int EpisodeNum { get; set; }

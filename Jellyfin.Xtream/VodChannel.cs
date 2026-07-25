@@ -162,7 +162,7 @@ public class VodChannel(ILogger<VodChannel> logger) : IChannel, IDisableMediaSou
         };
     }
 
-    private async Task<ChannelItemResult> GetStreams(int categoryId, CancellationToken cancellationToken)
+    private async Task<ChannelItemResult> GetStreams(long categoryId, CancellationToken cancellationToken)
     {
         IEnumerable<StreamInfo> streams = await Plugin.Instance.StreamService.GetVodStreams(categoryId, cancellationToken).ConfigureAwait(false);
         List<ChannelItemInfo> items = [.. await Task.WhenAll(streams.Select(CreateChannelItemInfo)).ConfigureAwait(false)];

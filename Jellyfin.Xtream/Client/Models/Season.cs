@@ -28,7 +28,7 @@ public class Season
     public int EpisodeCount { get; set; }
 
     [JsonProperty("id")]
-    public int SeasonId { get; set; }
+    public long SeasonId { get; set; }
 
     [JsonProperty("name")]
     public string Name { get; set; } = string.Empty;

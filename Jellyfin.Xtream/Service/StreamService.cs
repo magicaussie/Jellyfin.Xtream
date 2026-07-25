@@ -145,9 +145,9 @@ public partial class StreamService(IXtreamClient xtreamClient)
         };
     }
 
-    private bool IsConfigured(SerializableDictionary<int, HashSet<int>> config, int category, int id)
+    private bool IsConfigured(SerializableDictionary<int, HashSet<int>> config, long category, long id)
     {
-        return config.TryGetValue(category, out var values) && (values.Count == 0 || values.Contains(id));
+        return config.TryGetValue((int)category, out var values) && (values.Count == 0 || values.Contains((int)id));
     }
 
     /// <summary>
@@ -174,7 +174,7 @@ public partial class StreamService(IXtreamClient xtreamClient)
         IEnumerable<StreamInfo> streams = await GetLiveStreams(cancellationToken).ConfigureAwait(false);
         return streams.Select((StreamInfo stream) =>
         {
-            if (config.LiveTvOverrides.TryGetValue(stream.StreamId, out ChannelOverrides? overrides))
+            if (config.LiveTvOverrides.TryGetValue((int)stream.StreamId, out ChannelOverrides? overrides))
             {
                 stream.Num = overrides.Number ?? stream.Num;
                 stream.Name = overrides.Name ?? stream.Name;
@@ -196,7 +196,7 @@ public partial class StreamService(IXtreamClient xtreamClient)
         ParsedName parsedName = ParseName(category.CategoryName);
         return new ChannelItemInfo()
         {
-            Id = ToGuid(prefix, category.CategoryId, 0, 0).ToString(),
+            Id = ToGuid(prefix, (int)category.CategoryId, 0, 0).ToString(),
             Name = category.CategoryName,
             Tags = new List<string>(parsedName.Tags),
             Type = ChannelItemType.Folder,
@@ -211,7 +211,7 @@ public partial class StreamService(IXtreamClient xtreamClient)
     public async Task<IEnumerable<Category>> GetVodCategories(CancellationToken cancellationToken)
     {
         List<Category> categories = await xtreamClient.GetVodCategoryAsync(Plugin.Instance.Creds, cancellationToken).ConfigureAwait(false);
-        return categories.Where((Category category) => Plugin.Instance.Configuration.Vod.ContainsKey(category.CategoryId));
+        return categories.Where((Category category) => Plugin.Instance.Configuration.Vod.ContainsKey((int)category.CategoryId));
     }
 
     /// <summary>
@@ -220,7 +220,7 @@ public partial class StreamService(IXtreamClient xtreamClient)
     /// <param name="categoryId">The Xtream id of the category.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>IAsyncEnumerable{StreamInfo}.</returns>
-    public async Task<IEnumerable<StreamInfo>> GetVodStreams(int categoryId, CancellationToken cancellationToken)
+    public async Task<IEnumerable<StreamInfo>> GetVodStreams(long categoryId, CancellationToken cancellationToken)
     {
         if (!Plugin.Instance.Configuration.Vod.ContainsKey(categoryId))
         {
@@ -239,7 +239,7 @@ public partial class StreamService(IXtreamClient xtreamClient)
     public async Task<IEnumerable<Category>> GetSeriesCategories(CancellationToken cancellationToken)
     {
         List<Category> categories = await xtreamClient.GetSeriesCategoryAsync(Plugin.Instance.Creds, cancellationToken).ConfigureAwait(false);
-        return categories.Where((Category category) => Plugin.Instance.Configuration.Series.ContainsKey(category.CategoryId));
+        return categories.Where((Category category) => Plugin.Instance.Configuration.Series.ContainsKey((int)category.CategoryId));
     }
 
     /// <summary>
@@ -248,7 +248,7 @@ public partial class StreamService(IXtreamClient xtreamClient)
     /// <param name="categoryId">The Xtream id of the category.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>IAsyncEnumerable{StreamInfo}.</returns>
-    public async Task<IEnumerable<Series>> GetSeries(int categoryId, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Series>> GetSeries(long categoryId, CancellationToken cancellationToken)
     {
         if (!Plugin.Instance.Configuration.Series.ContainsKey(categoryId))
         {
@@ -265,16 +265,16 @@ public partial class StreamService(IXtreamClient xtreamClient)
     /// <param name="seriesId">The Xtream id of the Series.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>IAsyncEnumerable{StreamInfo}.</returns>
-    public async Task<IEnumerable<Tuple<SeriesStreamInfo, int>>> GetSeasons(int seriesId, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Tuple<SeriesStreamInfo, long>>> GetSeasons(long seriesId, CancellationToken cancellationToken)
     {
         SeriesStreamInfo series = await xtreamClient.GetSeriesStreamsBySeriesAsync(Plugin.Instance.Creds, seriesId, cancellationToken).ConfigureAwait(false);
-        int categoryId = series.Info.CategoryId;
+        int categoryId = (int)series.Info.CategoryId;
         if (!IsConfigured(Plugin.Instance.Configuration.Series, categoryId, seriesId))
         {
-            return new List<Tuple<SeriesStreamInfo, int>>();
+            return new List<Tuple<SeriesStreamInfo, long>>();
         }
 
-        return series.Episodes.Keys.Select((int seasonId) => new Tuple<SeriesStreamInfo, int>(series, seasonId));
+        return series.Episodes.Keys.Select((long seasonId) => new Tuple<SeriesStreamInfo, long>(series, seasonId));
     }
 
     /// <summary>
@@ -284,7 +284,7 @@ public partial class StreamService(IXtreamClient xtreamClient)
     /// <param name="seasonId">The Xtream id of the Season.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>IAsyncEnumerable{StreamInfo}.</returns>
-    public async Task<IEnumerable<Tuple<SeriesStreamInfo, Season?, Episode>>> GetEpisodes(int seriesId, int seasonId, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Tuple<SeriesStreamInfo, Season?, Episode>>> GetEpisodes(long seriesId, long seasonId, CancellationToken cancellationToken)
     {
         SeriesStreamInfo series = await xtreamClient.GetSeriesStreamsBySeriesAsync(Plugin.Instance.Creds, seriesId, cancellationToken).ConfigureAwait(false);
         Season? season = series.Seasons.FirstOrDefault(s => s.SeasonId == seasonId);
@@ -362,7 +362,7 @@ public partial class StreamService(IXtreamClient xtreamClient)
     /// <returns>The media source info as <see cref="MediaSourceInfo"/> class.</returns>
     public MediaSourceInfo GetMediaSourceInfo(
         StreamType type,
-        int id,
+        long id,
         string? extension = null,
         bool restream = false,
         DateTime? start = null,

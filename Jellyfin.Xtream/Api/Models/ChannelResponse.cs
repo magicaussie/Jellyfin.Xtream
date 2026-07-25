@@ -23,7 +23,7 @@ public class ChannelResponse
     /// <summary>
     /// Gets or sets the Xtream API id of the TV channel.
     /// </summary>
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     /// <summary>
     /// Gets or sets the TV channel number.

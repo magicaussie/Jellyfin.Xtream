@@ -30,7 +30,7 @@ public class StreamInfo
     public string StreamType { get; set; } = string.Empty;
 
     [JsonProperty("stream_id")]
-    public int StreamId { get; set; }
+    public long StreamId { get; set; }
 
     [JsonProperty("stream_icon")]
     public string StreamIcon { get; set; } = string.Empty;
@@ -42,7 +42,7 @@ public class StreamInfo
     public string Added { get; set; } = string.Empty;
 
     [JsonProperty("category_id")]
-    public int? CategoryId { get; set; }
+    public long? CategoryId { get; set; }
 
     [JsonProperty("container_extension")]
     public string ContainerExtension { get; set; } = string.Empty;

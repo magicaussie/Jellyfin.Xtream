@@ -66,5 +66,5 @@ public class SeriesInfo
     public int EpisodeRunTime { get; set; }
 
     [JsonProperty("category_id")]
-    public int CategoryId { get; set; }
+    public long CategoryId { get; set; }
 }

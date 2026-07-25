@@ -23,7 +23,7 @@ public class CategoryResponse
     /// <summary>
     /// Gets or sets the Xtream API id of the category.
     /// </summary>
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the category.

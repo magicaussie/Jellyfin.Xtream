@@ -124,25 +124,25 @@ public class XtreamClient(HttpClient client, ILogger<XtreamClient> logger) : IDi
           $"/player_api.php?username={connectionInfo.UserName}&password={connectionInfo.Password}",
           cancellationToken);
 
-    public Task<List<Series>> GetSeriesByCategoryAsync(ConnectionInfo connectionInfo, int categoryId, CancellationToken cancellationToken) =>
+    public Task<List<Series>> GetSeriesByCategoryAsync(ConnectionInfo connectionInfo, long categoryId, CancellationToken cancellationToken) =>
          QueryApi<List<Series>>(
            connectionInfo,
            $"/player_api.php?username={connectionInfo.UserName}&password={connectionInfo.Password}&action=get_series&category_id={categoryId}",
            cancellationToken);
 
-    public Task<SeriesStreamInfo> GetSeriesStreamsBySeriesAsync(ConnectionInfo connectionInfo, int seriesId, CancellationToken cancellationToken) =>
+    public Task<SeriesStreamInfo> GetSeriesStreamsBySeriesAsync(ConnectionInfo connectionInfo, long seriesId, CancellationToken cancellationToken) =>
          QueryApi<SeriesStreamInfo>(
            connectionInfo,
            $"/player_api.php?username={connectionInfo.UserName}&password={connectionInfo.Password}&action=get_series_info&series_id={seriesId}",
            cancellationToken);
 
-    public Task<List<StreamInfo>> GetVodStreamsByCategoryAsync(ConnectionInfo connectionInfo, int categoryId, CancellationToken cancellationToken) =>
+    public Task<List<StreamInfo>> GetVodStreamsByCategoryAsync(ConnectionInfo connectionInfo, long categoryId, CancellationToken cancellationToken) =>
          QueryApi<List<StreamInfo>>(
            connectionInfo,
            $"/player_api.php?username={connectionInfo.UserName}&password={connectionInfo.Password}&action=get_vod_streams&category_id={categoryId}",
            cancellationToken);
 
-    public Task<VodStreamInfo> GetVodInfoAsync(ConnectionInfo connectionInfo, int streamId, CancellationToken cancellationToken) =>
+    public Task<VodStreamInfo> GetVodInfoAsync(ConnectionInfo connectionInfo, long streamId, CancellationToken cancellationToken) =>
          QueryApi<VodStreamInfo>(
            connectionInfo,
            $"/player_api.php?username={connectionInfo.UserName}&password={connectionInfo.Password}&action=get_vod_info&vod_id={streamId}",
@@ -154,7 +154,7 @@ public class XtreamClient(HttpClient client, ILogger<XtreamClient> logger) : IDi
            $"/player_api.php?username={connectionInfo.UserName}&password={connectionInfo.Password}&action=get_live_streams",
            cancellationToken);
 
-    public Task<List<StreamInfo>> GetLiveStreamsByCategoryAsync(ConnectionInfo connectionInfo, int categoryId, CancellationToken cancellationToken) =>
+    public Task<List<StreamInfo>> GetLiveStreamsByCategoryAsync(ConnectionInfo connectionInfo, long categoryId, CancellationToken cancellationToken) =>
          QueryApi<List<StreamInfo>>(
            connectionInfo,
            $"/player_api.php?username={connectionInfo.UserName}&password={connectionInfo.Password}&action=get_live_streams&category_id={categoryId}",
@@ -178,7 +178,7 @@ public class XtreamClient(HttpClient client, ILogger<XtreamClient> logger) : IDi
            $"/player_api.php?username={connectionInfo.UserName}&password={connectionInfo.Password}&action=get_live_categories",
            cancellationToken);
 
-    public Task<EpgListings> GetEpgInfoAsync(ConnectionInfo connectionInfo, int streamId, CancellationToken cancellationToken) =>
+    public Task<EpgListings> GetEpgInfoAsync(ConnectionInfo connectionInfo, long streamId, CancellationToken cancellationToken) =>
          QueryApi<EpgListings>(
            connectionInfo,
            $"/player_api.php?username={connectionInfo.UserName}&password={connectionInfo.Password}&action=get_simple_data_table&stream_id={streamId}",

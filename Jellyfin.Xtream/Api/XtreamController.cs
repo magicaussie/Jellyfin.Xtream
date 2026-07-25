@@ -114,7 +114,7 @@ public class XtreamController(IXtreamClient xtreamClient) : ControllerBase
     /// <returns>An enumerable containing the streams.</returns>
     [Authorize(Policy = "RequiresElevation")]
     [HttpGet("LiveCategories/{categoryId}")]
-    public async Task<ActionResult<IEnumerable<StreamInfo>>> GetLiveStreams(int categoryId, CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<StreamInfo>>> GetLiveStreams(long categoryId, CancellationToken cancellationToken)
     {
         Plugin plugin = Plugin.Instance;
         List<StreamInfo> streams = await xtreamClient.GetLiveStreamsByCategoryAsync(
@@ -146,7 +146,7 @@ public class XtreamController(IXtreamClient xtreamClient) : ControllerBase
     /// <returns>An enumerable containing the streams.</returns>
     [Authorize(Policy = "RequiresElevation")]
     [HttpGet("VodCategories/{categoryId}")]
-    public async Task<ActionResult<IEnumerable<StreamInfo>>> GetVodStreams(int categoryId, CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<StreamInfo>>> GetVodStreams(long categoryId, CancellationToken cancellationToken)
     {
         Plugin plugin = Plugin.Instance;
         List<StreamInfo> streams = await xtreamClient.GetVodStreamsByCategoryAsync(
@@ -178,7 +178,7 @@ public class XtreamController(IXtreamClient xtreamClient) : ControllerBase
     /// <returns>An enumerable containing the streams.</returns>
     [Authorize(Policy = "RequiresElevation")]
     [HttpGet("SeriesCategories/{categoryId}")]
-    public async Task<ActionResult<IEnumerable<StreamInfo>>> GetSeriesStreams(int categoryId, CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<StreamInfo>>> GetSeriesStreams(long categoryId, CancellationToken cancellationToken)
     {
         Plugin plugin = Plugin.Instance;
         List<Series> series = await xtreamClient.GetSeriesByCategoryAsync(

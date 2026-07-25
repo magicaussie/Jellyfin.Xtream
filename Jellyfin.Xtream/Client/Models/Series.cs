@@ -30,7 +30,7 @@ public class Series
     public string Name { get; set; } = string.Empty;
 
     [JsonProperty("series_id")]
-    public int SeriesId { get; set; }
+    public long SeriesId { get; set; }
 
     [JsonProperty("cover")]
     public string Cover { get; set; } = string.Empty;
@@ -73,5 +73,5 @@ public class Series
     public int EpisodeRunTime { get; set; }
 
     [JsonProperty("category_id")]
-    public int CategoryId { get; set; }
+    public long CategoryId { get; set; }
 }

@@ -23,7 +23,7 @@ public class ItemResponse
     /// <summary>
     /// Gets or sets the Xtream API id of the item.
     /// </summary>
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the item.
