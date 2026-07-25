@@ -222,7 +222,7 @@ public partial class StreamService(IXtreamClient xtreamClient)
     /// <returns>IAsyncEnumerable{StreamInfo}.</returns>
     public async Task<IEnumerable<StreamInfo>> GetVodStreams(long categoryId, CancellationToken cancellationToken)
     {
-        if (!Plugin.Instance.Configuration.Vod.ContainsKey(categoryId))
+        if (!Plugin.Instance.Configuration.Vod.ContainsKey((int)categoryId))
         {
             return new List<StreamInfo>();
         }
@@ -250,7 +250,7 @@ public partial class StreamService(IXtreamClient xtreamClient)
     /// <returns>IAsyncEnumerable{StreamInfo}.</returns>
     public async Task<IEnumerable<Series>> GetSeries(long categoryId, CancellationToken cancellationToken)
     {
-        if (!Plugin.Instance.Configuration.Series.ContainsKey(categoryId))
+        if (!Plugin.Instance.Configuration.Series.ContainsKey((int)categoryId))
         {
             return new List<Series>();
         }
@@ -441,7 +441,7 @@ public partial class StreamService(IXtreamClient xtreamClient)
         {
             Container = extension,
             EncoderProtocol = MediaProtocol.Http,
-            Id = ToGuid(MediaSourcePrefix, (int)type, id, 0).ToString(),
+            Id = ToGuid(MediaSourcePrefix, (int)type, (int)id, 0).ToString(),
             IsInfiniteStream = isLive,
             IsRemote = true,
             MediaStreams = mediaStreams,

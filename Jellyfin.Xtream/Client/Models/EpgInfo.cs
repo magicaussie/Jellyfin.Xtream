@@ -24,9 +24,9 @@ public class EpgInfo
 {
     [JsonProperty("id")]
     public long Id { get; set; }
- 
-     [JsonProperty("epg_id")]
-     public long EpgId { get; set; }
+
+    [JsonProperty("epg_id")]
+    public long EpgId { get; set; }
 
     [JsonConverter(typeof(Base64Converter))]
     [JsonProperty("title")]

@@ -131,7 +131,7 @@ public class SeriesChannel(ILogger<SeriesChannel> logger) : IChannel, IDisableMe
         return new ChannelItemInfo()
         {
             CommunityRating = (float)series.Rating5Based,
-            DateModified = series.LastModified,
+            DateModified = series.LastModified.GetValueOrDefault(),
             FolderType = ChannelFolderType.Series,
             Genres = GetGenres(series.Genre),
             Id = StreamService.ToGuid(StreamService.SeriesPrefix, (int)series.CategoryId, (int)series.SeriesId, 0).ToString(),

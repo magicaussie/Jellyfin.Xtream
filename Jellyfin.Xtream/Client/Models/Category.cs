@@ -22,10 +22,10 @@ public class Category
 {
     [JsonProperty("category_id")]
     public long CategoryId { get; set; }
- 
-     [JsonProperty("category_name")]
-     public string CategoryName { get; set; } = string.Empty;
- 
-     [JsonProperty("parent_id")]
-     public long ParentId { get; set; }
+
+    [JsonProperty("category_name")]
+    public string CategoryName { get; set; } = string.Empty;
+
+    [JsonProperty("parent_id")]
+    public long ParentId { get; set; }
 }
