@@ -70,7 +70,7 @@ public class Series
     public string YoutubeTrailer { get; set; } = string.Empty;
 
     [JsonProperty("episode_run_time")]
-    public int EpisodeRunTime { get; set; }
+    public int? EpisodeRunTime { get; set; }
 
     [JsonProperty("category_id")]
     public long CategoryId { get; set; }

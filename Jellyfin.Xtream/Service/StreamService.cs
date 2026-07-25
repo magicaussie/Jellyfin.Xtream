@@ -358,7 +358,7 @@ public partial class StreamService(IXtreamClient xtreamClient)
     /// <param name="start">The datetime representing the start time of catcup TV.</param>
     /// <param name="durationMinutes">The duration in minutes of the catcup TV stream.</param>
     /// <param name="videoInfo">The Xtream video info if known.</param>
-    /// <param name="audioInfo">The Xtream audio info if known.</param>
+    /// <param name="audioInfoList">The Xtream audio info list if known.</param>
     /// <returns>The media source info as <see cref="MediaSourceInfo"/> class.</returns>
     public MediaSourceInfo GetMediaSourceInfo(
         StreamType type,
@@ -368,7 +368,7 @@ public partial class StreamService(IXtreamClient xtreamClient)
         DateTime? start = null,
         int durationMinutes = 0,
         VideoInfo? videoInfo = null,
-        AudioInfo? audioInfo = null)
+        ICollection<AudioInfo>? audioInfoList = null)
     {
         string prefix = string.Empty;
         switch (type)
@@ -395,6 +395,48 @@ public partial class StreamService(IXtreamClient xtreamClient)
         }
 
         bool isLive = type == StreamType.Live;
+
+        List<MediaStream> mediaStreams =
+        [
+            new()
+            {
+                AspectRatio = videoInfo?.AspectRatio,
+                BitDepth = videoInfo?.BitsPerRawSample,
+                Codec = videoInfo?.CodecName,
+                ColorPrimaries = videoInfo?.ColorPrimaries,
+                ColorRange = videoInfo?.ColorRange,
+                ColorSpace = videoInfo?.ColorSpace,
+                ColorTransfer = videoInfo?.ColorTransfer,
+                Height = videoInfo?.Height,
+                Index = videoInfo?.Index ?? -1,
+                IsAVC = videoInfo?.IsAVC,
+                IsInterlaced = true,
+                Level = videoInfo?.Level,
+                PixelFormat = videoInfo?.PixelFormat,
+                Profile = videoInfo?.Profile,
+                Type = MediaStreamType.Video,
+                Width = videoInfo?.Width,
+            },
+        ];
+
+        if (audioInfoList != null)
+        {
+            foreach (AudioInfo audio in audioInfoList)
+            {
+                mediaStreams.Add(new()
+                {
+                    BitRate = audio.Bitrate,
+                    ChannelLayout = audio.ChannelLayout,
+                    Channels = audio.Channels,
+                    Codec = audio.CodecName,
+                    Index = audio.Index,
+                    Profile = audio.Profile,
+                    SampleRate = audio.SampleRate,
+                    Type = MediaStreamType.Audio,
+                });
+            }
+        }
+
         return new MediaSourceInfo()
         {
             Container = extension,
@@ -402,39 +444,7 @@ public partial class StreamService(IXtreamClient xtreamClient)
             Id = ToGuid(MediaSourcePrefix, (int)type, id, 0).ToString(),
             IsInfiniteStream = isLive,
             IsRemote = true,
-            MediaStreams =
-            [
-                new()
-                {
-                    AspectRatio = videoInfo?.AspectRatio,
-                    BitDepth = videoInfo?.BitsPerRawSample,
-                    Codec = videoInfo?.CodecName,
-                    ColorPrimaries = videoInfo?.ColorPrimaries,
-                    ColorRange = videoInfo?.ColorRange,
-                    ColorSpace = videoInfo?.ColorSpace,
-                    ColorTransfer = videoInfo?.ColorTransfer,
-                    Height = videoInfo?.Height,
-                    Index = videoInfo?.Index ?? -1,
-                    IsAVC = videoInfo?.IsAVC,
-                    IsInterlaced = true,
-                    Level = videoInfo?.Level,
-                    PixelFormat = videoInfo?.PixelFormat,
-                    Profile = videoInfo?.Profile,
-                    Type = MediaStreamType.Video,
-                    Width = videoInfo?.Width,
-                },
-                new()
-                {
-                    BitRate = audioInfo?.Bitrate,
-                    ChannelLayout = audioInfo?.ChannelLayout,
-                    Channels = audioInfo?.Channels,
-                    Codec = audioInfo?.CodecName,
-                    Index = audioInfo?.Index ?? -1,
-                    Profile = audioInfo?.Profile,
-                    SampleRate = audioInfo?.SampleRate,
-                    Type = MediaStreamType.Audio,
-                }
-            ],
+            MediaStreams = mediaStreams,
             Name = "default",
             Path = uri,
             Protocol = MediaProtocol.Http,

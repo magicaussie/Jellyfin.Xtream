@@ -206,7 +206,7 @@ public class SeriesChannel(ILogger<SeriesChannel> logger) : IChannel, IDisableMe
                 episode.EpisodeId,
                 episode.ContainerExtension,
                 videoInfo: episode.Info?.Video,
-                audioInfo: episode.Info?.Audio)
+                audioInfoList: episode.Info?.Audio)
         ];
 
         string? cover = episode.Info?.MovieImage;

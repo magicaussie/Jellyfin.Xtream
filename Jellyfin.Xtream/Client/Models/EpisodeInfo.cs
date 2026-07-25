@@ -14,6 +14,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Generic;
+using Jellyfin.Xtream.Client;
 using Newtonsoft.Json;
 
 #pragma warning disable CS1591
@@ -44,6 +46,8 @@ public class EpisodeInfo
     public VideoInfo? Video { get; set; }
 
     [JsonProperty("audio")]
-    [JsonConverter(typeof(OnlyObjectConverter<AudioInfo>))]
-    public AudioInfo? Audio { get; set; }
+    [JsonConverter(typeof(SingularToListConverter<AudioInfo>))]
+    #pragma warning disable CA2227
+    public ICollection<AudioInfo>? Audio { get; set; }
+    #pragma warning restore CA2227
 }
