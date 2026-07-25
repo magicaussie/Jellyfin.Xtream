@@ -114,9 +114,20 @@ public class XtreamClient(HttpClient client, ILogger<XtreamClient> logger) : IDi
     private async Task<T> QueryApi<T>(ConnectionInfo connectionInfo, string urlPath, CancellationToken cancellationToken)
     {
         Uri uri = new Uri(connectionInfo.BaseUrl + urlPath);
+        logger.LogDebug("Calling Xtream API: {Method} {Uri}", "GET", uri);
         using CancellationTokenSource timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         timeoutCts.CancelAfter(TimeSpan.FromSeconds(Plugin.Instance.Configuration.RequestTimeout));
-        string jsonContent = await client.GetStringAsync(uri, timeoutCts.Token).ConfigureAwait(false);
+        string jsonContent;
+        try
+        {
+            jsonContent = await client.GetStringAsync(uri, timeoutCts.Token).ConfigureAwait(false);
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "Xtream API request failed for URL: {Uri}", uri);
+            throw;
+        }
+
         return JsonConvert.DeserializeObject<T>(jsonContent, _serializerSettings)!;
     }
 

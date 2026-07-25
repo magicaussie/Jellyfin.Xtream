@@ -26,8 +26,10 @@ export default function (view) {
       const time = view.querySelector("#ProviderTime");
       const timezone = view.querySelector("#ProviderTimezone");
       const mpegTs = view.querySelector("#ProviderMpegTs");
+      const providerUrl = view.querySelector("#ProviderUrl");
 
       Xtream.fetchJson('Xtream/TestProvider').then(response => {
+        providerUrl.innerText = response.ServerUrl;
         status.innerText = response.Status;
         expiry.innerText = response.ExpiryDate;
         cons.innerText = response.ActiveConnections;
@@ -36,6 +38,7 @@ export default function (view) {
         timezone.innerText = response.ServerTimezone;
         mpegTs.innerText = response.SupportsMpegTs;
       }).catch((_) => {
+        providerUrl.innerText = view.querySelector('#BaseUrl').value || "(not configured)";
         status.innerText = "Failed. Check server logs.";
         expiry.innerText = "";
         cons.innerText = "";

@@ -56,4 +56,9 @@ public class ProviderTestResponse
     /// Gets or sets a value indicating whether or not MPEG-TS is supported by the provider.
     /// </summary>
     public bool SupportsMpegTs { get; set; }
+
+    /// <summary>
+    /// Gets or sets the provider server URL being called.
+    /// </summary>
+    public string ServerUrl { get; set; } = string.Empty;
 }

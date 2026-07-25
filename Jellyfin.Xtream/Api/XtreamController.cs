@@ -89,6 +89,7 @@ public class XtreamController(IXtreamClient xtreamClient) : ControllerBase
             ServerTimezone = info.ServerInfo.Timezone,
             Status = info.UserInfo.Status,
             SupportsMpegTs = info.UserInfo.AllowedOutputFormats.Contains("ts"),
+            ServerUrl = plugin.Configuration.BaseUrl,
         });
     }
 
