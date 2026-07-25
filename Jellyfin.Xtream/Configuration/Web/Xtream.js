@@ -151,6 +151,17 @@ const createCategoryRow = (wrapper, category, loadItems) => {
   return tr;
 };
 
+const deduplicateCategories = (categories) => {
+  const seen = new Set();
+  return categories.filter(cat => {
+    if (seen.has(cat.Id)) {
+      return false;
+    }
+    seen.add(cat.Id);
+    return true;
+  });
+};
+
 const populateCategoriesTable = (table, loadConfig, loadCategories, loadItems) => {
   Dashboard.showLoadingMsg();
   const fetchConfig = loadConfig();
@@ -159,6 +170,7 @@ const populateCategoriesTable = (table, loadConfig, loadCategories, loadItems) =
   return Promise.all([fetchConfig, fetchCategories])
     .then(([config, categories]) => {
       const data = config;
+      categories = deduplicateCategories(categories);
       for (let i = 0; i < categories.length; ++i) {
         const category = categories[i];
         const wrapper = {

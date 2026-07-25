@@ -45,6 +45,11 @@ public class PluginConfiguration : BasePluginConfiguration
     public string UserAgent { get; set; } = string.Empty;
 
     /// <summary>
+    /// Gets or sets the request timeout in seconds.
+    /// </summary>
+    public int RequestTimeout { get; set; } = 90;
+
+    /// <summary>
     /// Gets or sets a value indicating whether the Catch-up channel is visible.
     /// </summary>
     public bool IsCatchupVisible { get; set; }

@@ -114,7 +114,9 @@ public class XtreamClient(HttpClient client, ILogger<XtreamClient> logger) : IDi
     private async Task<T> QueryApi<T>(ConnectionInfo connectionInfo, string urlPath, CancellationToken cancellationToken)
     {
         Uri uri = new Uri(connectionInfo.BaseUrl + urlPath);
-        string jsonContent = await client.GetStringAsync(uri, cancellationToken).ConfigureAwait(false);
+        using CancellationTokenSource timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeoutCts.CancelAfter(TimeSpan.FromSeconds(Plugin.Instance.Configuration.RequestTimeout));
+        string jsonContent = await client.GetStringAsync(uri, timeoutCts.Token).ConfigureAwait(false);
         return JsonConvert.DeserializeObject<T>(jsonContent, _serializerSettings)!;
     }
 
